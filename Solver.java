@@ -30,7 +30,7 @@ public class Solver {
 
         MinPQ<Board> pqOriginal = new MinPQ<>(new Comparator<Board>() {
             public int compare(Board board, Board t1) {
-                return (board.hamming() + board.manhattan()) - (t1.hamming() + t1.manhattan());
+                return board.manhattan() - t1.manhattan();
             }
         });
 
