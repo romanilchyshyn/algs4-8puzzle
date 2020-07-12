@@ -4,6 +4,10 @@
  *  Description:
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.StdRandom;
+
+import java.util.ArrayList;
+
 public class Board {
 
     private int[][] tiles;
@@ -129,12 +133,71 @@ public class Board {
 
     // all neighboring boards
     public Iterable<Board> neighbors() {
-        throw new UnsupportedOperationException();
+        ArrayList<Board> result = new ArrayList<Board>();
+
+        int zeroI = 0;
+        int zeroJ = 0;
+
+        int[][] neighborTiles = new int[dimension][dimension];
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                neighborTiles[i][j] = tiles[i][j];
+
+                if (tiles[i][j] == 0) {
+                    zeroI = i;
+                    zeroJ = j;
+                }
+            }
+        }
+
+        if (zeroI + 1 < dimension) {
+            Board.exch(neighborTiles, zeroI, zeroJ, zeroI + 1, zeroJ);
+            result.add(new Board(neighborTiles));
+            Board.exch(neighborTiles, zeroI + 1, zeroJ, zeroI, zeroJ);
+        }
+        if (0 <= zeroI - 1) {
+            Board.exch(neighborTiles, zeroI, zeroJ, zeroI - 1, zeroJ);
+            result.add(new Board(neighborTiles));
+            Board.exch(neighborTiles, zeroI - 1, zeroJ, zeroI, zeroJ);
+        }
+        if (zeroJ + 1 < dimension) {
+            Board.exch(neighborTiles, zeroI, zeroJ, zeroI, zeroJ + 1);
+            result.add(new Board(neighborTiles));
+            Board.exch(neighborTiles, zeroI, zeroJ + 1, zeroI, zeroJ);
+        }
+        if (0 <= zeroJ - 1) {
+            Board.exch(neighborTiles, zeroI, zeroJ, zeroI, zeroJ - 1);
+            result.add(new Board(neighborTiles));
+            Board.exch(neighborTiles, zeroI, zeroJ - 1, zeroI, zeroJ);
+        }
+
+        return result;
     }
 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
-        throw new UnsupportedOperationException();
+        int[][] twinTiles = new int[dimension][dimension];
+
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                twinTiles[i][j] = tiles[i][j];
+            }
+        }
+
+        int i1 = StdRandom.uniform(dimension);
+        int j1 = StdRandom.uniform(dimension);
+        int i2 = StdRandom.uniform(dimension);
+        int j2 = StdRandom.uniform(dimension);
+
+        Board.exch(twinTiles, i1, j1, i2, j2);
+
+        return new Board(twinTiles);
+    }
+
+    private static void exch(int [][] a, int i1, int j1, int i2, int j2) {
+        int tmp = a[i1][j1];
+        a[i1][j1] = a[i2][j2];
+        a[i2][j2] = tmp;
     }
 
     // unit testing (not graded)
@@ -165,14 +228,29 @@ public class Board {
         // System.out.println(b1.equals(b2));
         // System.out.println(b1.equals(b3));
         // System.out.println(b1.equals(b4));
+        // System.out.println(b4.hamming());
+        // System.out.println(b4.manhattan());
+        // System.out.println(b4.isGoal());
 
-        int[][] test = new int[][]{{8, 1, 3}, {4, 0, 2}, {7, 6, 5}};
-        Board bTest = new Board(test);
+        int[][] test1 = new int[][]{{8, 1, 3}, {4, 0, 2}, {7, 6, 5}};
+        Board bTest1 = new Board(test1);
 
-        System.out.println(bTest);
-        System.out.println(bTest.hamming());
-        System.out.println(bTest.manhattan());
+        System.out.println(bTest1);
+        // System.out.println(bTest1.hamming());
+        // System.out.println(bTest1.manhattan());
+        for (Board b : bTest1.neighbors()) {
+            System.out.println(b);
+        }
 
+        int[][] test2 = new int[][]{{1, 0, 3}, {4, 2, 5}, {7, 8, 6}};
+        Board bTest2 = new Board(test2);
+
+        System.out.println(bTest2);
+        // System.out.println(bTest1.hamming());
+        // System.out.println(bTest1.manhattan());
+        for (Board b : bTest2.neighbors()) {
+            System.out.println(b);
+        }
     }
 
 }
