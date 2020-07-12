@@ -36,9 +36,10 @@ public class Board {
         for (int i = 0; i < dimension; i++) {
             sb.append('\n');
             for (int j = 0; j < dimension; j++) {
-                sb.append(' ');
-                sb.append(' ');
-                sb.append(tiles[i][j]);
+                sb.append(String.format("%2d", tiles[i][j]));
+                if (j != dimension - 1) {
+                    sb.append(' ');
+                }
             }
         }
 
