@@ -12,6 +12,8 @@ public class Board {
 
     private int[][] tiles;
     private int dimension;
+    private int hamming = -1;
+    private int manhattan = -1;
 
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
@@ -50,21 +52,25 @@ public class Board {
 
     // number of tiles out of place
     public int hamming() {
-        int result = 0;
+        if (-1 < hamming) {
+            return hamming;
+        } else {
+            hamming = 0;
 
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < dimension; j++) {
-                int tile = tiles[i][j];
-                if (tile == 0) {
-                    continue;
-                }
-                if (tile != goalTileAtPosition(i, j)) {
-                    result++;
+            for (int i = 0; i < dimension; i++) {
+                for (int j = 0; j < dimension; j++) {
+                    int tile = tiles[i][j];
+                    if (tile == 0) {
+                        continue;
+                    }
+                    if (tile != goalTileAtPosition(i, j)) {
+                        hamming++;
+                    }
                 }
             }
-        }
 
-        return result;
+            return hamming;
+        }
     }
 
     private int goalTileAtPosition(int i, int j) {
@@ -77,25 +83,29 @@ public class Board {
 
     // sum of Manhattan distances between tiles and goal
     public int manhattan() {
-        int result = 0;
+        if (-1 < manhattan) {
+            return manhattan;
+        } else {
+            manhattan = 0;
 
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < dimension; j++) {
-                int tile = tiles[i][j];
-                if (tile == 0) {
-                    continue;
+            for (int i = 0; i < dimension; i++) {
+                for (int j = 0; j < dimension; j++) {
+                    int tile = tiles[i][j];
+                    if (tile == 0) {
+                        continue;
+                    }
+
+                    int tileGoalI = (tile - 1) / dimension;
+                    int tileGoalJ = (tile - 1) % dimension;
+
+                    int m = Math.abs(tileGoalI - i) + Math.abs(tileGoalJ - j);
+
+                    manhattan += m;
                 }
-
-                int tileGoalI = (tile - 1) / dimension;
-                int tileGoalJ = (tile - 1) % dimension;
-
-                int m = Math.abs(tileGoalI - i) + Math.abs(tileGoalJ - j);
-
-                result += m;
             }
-        }
 
-        return result;
+            return manhattan;
+        }
     }
 
     // is this board the goal board?
@@ -236,21 +246,10 @@ public class Board {
         Board bTest1 = new Board(test1);
 
         System.out.println(bTest1);
-        // System.out.println(bTest1.hamming());
-        // System.out.println(bTest1.manhattan());
-        for (Board b : bTest1.neighbors()) {
-            System.out.println(b);
-        }
+        System.out.println(bTest1.hamming());
+        System.out.println(bTest1.manhattan());
 
-        int[][] test2 = new int[][]{{1, 0, 3}, {4, 2, 5}, {7, 8, 6}};
-        Board bTest2 = new Board(test2);
 
-        System.out.println(bTest2);
-        // System.out.println(bTest1.hamming());
-        // System.out.println(bTest1.manhattan());
-        for (Board b : bTest2.neighbors()) {
-            System.out.println(b);
-        }
     }
 
 }
