@@ -30,6 +30,7 @@ public class Solver {
             isSolvable = true;
             moves = 0;
             solution = new ArrayList<>();
+            solution.add(initial);
 
             return;
         }
