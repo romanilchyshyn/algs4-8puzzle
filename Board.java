@@ -10,8 +10,8 @@ import java.util.ArrayList;
 
 public class Board {
 
-    private int[][] tiles;
-    private int dimension;
+    private final int[][] tiles;
+    private final int dimension;
     private int hamming = -1;
     private int manhattan = -1;
 
@@ -243,7 +243,7 @@ public class Board {
         // System.out.println(b4.manhattan());
         // System.out.println(b4.isGoal());
 
-        int[][] test1 = new int[][]{{8, 1, 3}, {4, 0, 2}, {7, 6, 5}};
+        int[][] test1 = {{8, 1, 3}, {4, 0, 2}, {7, 6, 5}};
         Board bTest1 = new Board(test1);
 
         System.out.println(bTest1);

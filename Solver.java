@@ -13,6 +13,12 @@ import java.util.Comparator;
 
 public class Solver {
 
+    private static final class BoardComparator implements Comparator<Board> {
+        public int compare(Board board, Board t1) {
+            return board.manhattan() - t1.manhattan();
+        }
+    }
+
     private boolean isSolvable;
     private int moves;
     private ArrayList<Board> solution;
@@ -28,17 +34,8 @@ public class Solver {
             return;
         }
 
-        MinPQ<Board> pqOriginal = new MinPQ<>(new Comparator<Board>() {
-            public int compare(Board board, Board t1) {
-                return board.manhattan() - t1.manhattan();
-            }
-        });
-
-        MinPQ<Board> pqTwin = new MinPQ<>(new Comparator<Board>() {
-            public int compare(Board board, Board t1) {
-                return (board.hamming() + board.manhattan()) - (t1.hamming() + t1.manhattan());
-            }
-        });
+        MinPQ<Board> pqOriginal = new MinPQ<>(new BoardComparator());
+        MinPQ<Board> pqTwin = new MinPQ<>(new BoardComparator());
 
         ArrayList<Board> visitedOriginal = new ArrayList<>();
         ArrayList<Board> visitedTwin = new ArrayList<>();
