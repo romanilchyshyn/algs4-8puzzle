@@ -10,8 +10,11 @@ import java.util.ArrayList;
 
 public class Board {
 
-    private final int[][] tiles;
     private final int dimension;
+
+    private final int[][] tiles;
+    private Board twinBoard;
+
     private int hamming = -1;
     private int manhattan = -1;
 
@@ -187,6 +190,10 @@ public class Board {
 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
+        if (twinBoard != null) {
+            return twinBoard;
+        }
+
         int[][] twinTiles = new int[dimension][dimension];
 
         for (int i = 0; i < dimension; i++) {
@@ -195,14 +202,29 @@ public class Board {
             }
         }
 
-        int i1 = StdRandom.uniform(dimension);
-        int j1 = StdRandom.uniform(dimension);
-        int i2 = StdRandom.uniform(dimension);
-        int j2 = StdRandom.uniform(dimension);
+        boolean exchanged = false;
 
-        Board.exch(twinTiles, i1, j1, i2, j2);
+        while (!exchanged) {
+            int i1 = StdRandom.uniform(dimension);
+            int j1 = StdRandom.uniform(dimension);
+            int i2 = StdRandom.uniform(dimension);
+            int j2 = StdRandom.uniform(dimension);
 
-        return new Board(twinTiles);
+            if (i1 == i2 || j1 == j2) {
+                continue;
+            }
+
+            if (twinTiles[i1][j1] == 0 || twinTiles[i2][j2] == 0) {
+                continue;
+            }
+
+            Board.exch(twinTiles, i1, j1, i2, j2);
+            exchanged = true;
+        }
+
+        twinBoard = new Board(twinTiles);
+
+        return twinBoard;
     }
 
     private static void exch(int [][] a, int i1, int j1, int i2, int j2) {
@@ -249,7 +271,8 @@ public class Board {
         System.out.println(bTest1);
         System.out.println(bTest1.hamming());
         System.out.println(bTest1.manhattan());
-
+        System.out.println(bTest1.twin());
+        System.out.println(bTest1.twin());
 
     }
 
