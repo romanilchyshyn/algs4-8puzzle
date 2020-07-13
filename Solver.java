@@ -19,10 +19,48 @@ public class Solver {
         }
     }
 
+    private final class SolverStepper {
+
+        private Board current;
+        private ArrayList<Board> solution = new ArrayList<>();
+
+        private SolverStepper(Board initial) {
+            current = initial;
+            solution.add(current);
+        }
+
+        private Board next() {
+            if (current.isGoal()) {
+                return current;
+            }
+
+            MinPQ<Board> pq = new MinPQ<>(new BoardComparator());
+            for (Board nb : current.neighbors()) {
+                if (solution.size() > 1 && solution.get(solution.size() - 2).equals(nb)) {
+                    continue;
+                }
+                pq.insert(nb);
+            }
+
+            current = pq.delMin();
+
+            solution.add(current);
+
+            return current;
+        }
+
+        private ArrayList<Board> solution() {
+            return solution;
+        }
+
+        private Board current() {
+            return current;
+        }
+    }
+
     private boolean isSolvable;
     private int moves;
     private ArrayList<Board> solution;
-
 
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
@@ -35,48 +73,21 @@ public class Solver {
             return;
         }
 
-        MinPQ<Board> pqOriginal = new MinPQ<>(new BoardComparator());
-        MinPQ<Board> pqTwin = new MinPQ<>(new BoardComparator());
+        SolverStepper original = new SolverStepper(initial);
+        SolverStepper twin = new SolverStepper(initial.twin());
 
-        ArrayList<Board> visitedOriginal = new ArrayList<>();
-        ArrayList<Board> visitedTwin = new ArrayList<>();
+        while (true) {
+            Board nextOriginal = original.next();
+            Board nextTwin = twin.next();
 
-        Board currentOriginal = initial;
-        Board currentTwin = initial.twin();
-
-        visitedOriginal.add(currentOriginal);
-        visitedTwin.add(currentTwin);
-
-        while (!currentOriginal.isGoal() && !currentTwin.isGoal()) {
-            for (Board nb : currentOriginal.neighbors()) {
-                if (visitedOriginal.contains(nb)) {
-                    continue;
-                }
-                pqOriginal.insert(nb);
-            }
-            if (!pqOriginal.isEmpty()) {
-                currentOriginal = pqOriginal.delMin();
-                visitedOriginal.add(currentOriginal);
-            }
-
-            // -
-
-            for (Board nb : currentTwin.neighbors()) {
-                if (visitedTwin.contains(nb)) {
-                    continue;
-                }
-                pqTwin.insert(nb);
-            }
-
-            if (!pqTwin.isEmpty()) {
-                currentTwin = pqTwin.delMin();
-                visitedTwin.add(currentTwin);
+            if (nextOriginal.isGoal() || nextTwin.isGoal()) {
+                break;
             }
         }
 
-        isSolvable = currentOriginal.isGoal();
-        moves = isSolvable ? visitedOriginal.size() - 1 : -1;
-        solution = isSolvable ? visitedOriginal : null;
+        isSolvable = original.current().isGoal();
+        moves = isSolvable ? original.solution().size() - 1 : -1;
+        solution = isSolvable ? original.solution() : null;
     }
 
     // is the initial board solvable? (see below)
