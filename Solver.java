@@ -47,15 +47,17 @@ public class Solver {
         visitedOriginal.add(currentOriginal);
         visitedTwin.add(currentTwin);
 
-        while (!currentOriginal.isGoal() || !currentTwin.isGoal()) {
+        while (!currentOriginal.isGoal() && !currentTwin.isGoal()) {
             for (Board nb : currentOriginal.neighbors()) {
                 if (visitedOriginal.contains(nb)) {
                     continue;
                 }
                 pqOriginal.insert(nb);
             }
-            currentOriginal = pqOriginal.delMin();
-            visitedOriginal.add(currentOriginal);
+            if (!pqOriginal.isEmpty()) {
+                currentOriginal = pqOriginal.delMin();
+                visitedOriginal.add(currentOriginal);
+            }
 
             // -
 
@@ -65,8 +67,11 @@ public class Solver {
                 }
                 pqTwin.insert(nb);
             }
-            currentTwin = pqTwin.delMin();
-            visitedTwin.add(currentTwin);
+
+            if (!pqTwin.isEmpty()) {
+                currentTwin = pqTwin.delMin();
+                visitedTwin.add(currentTwin);
+            }
         }
 
         isSolvable = currentOriginal.isGoal();
