@@ -15,9 +15,6 @@ public class Board {
     private final int[][] tiles;
     private Board twinBoard;
 
-    private int hamming = -1;
-    private int manhattan = -1;
-
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
     public Board(int[][] tiles) {
@@ -56,25 +53,21 @@ public class Board {
 
     // number of tiles out of place
     public int hamming() {
-        if (-1 < hamming) {
-            return hamming;
-        } else {
-            hamming = 0;
+        int hamming = 0;
 
-            for (int i = 0; i < dimension; i++) {
-                for (int j = 0; j < dimension; j++) {
-                    int tile = tiles[i][j];
-                    if (tile == 0) {
-                        continue;
-                    }
-                    if (tile != goalTileAtPosition(i, j)) {
-                        hamming++;
-                    }
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                int tile = tiles[i][j];
+                if (tile == 0) {
+                    continue;
+                }
+                if (tile != goalTileAtPosition(i, j)) {
+                    hamming++;
                 }
             }
-
-            return hamming;
         }
+
+        return hamming;
     }
 
     private int goalTileAtPosition(int i, int j) {
@@ -87,29 +80,25 @@ public class Board {
 
     // sum of Manhattan distances between tiles and goal
     public int manhattan() {
-        if (-1 < manhattan) {
-            return manhattan;
-        } else {
-            manhattan = 0;
+        int manhattan = 0;
 
-            for (int i = 0; i < dimension; i++) {
-                for (int j = 0; j < dimension; j++) {
-                    int tile = tiles[i][j];
-                    if (tile == 0) {
-                        continue;
-                    }
-
-                    int tileGoalI = (tile - 1) / dimension;
-                    int tileGoalJ = (tile - 1) % dimension;
-
-                    int m = Math.abs(tileGoalI - i) + Math.abs(tileGoalJ - j);
-
-                    manhattan += m;
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                int tile = tiles[i][j];
+                if (tile == 0) {
+                    continue;
                 }
-            }
 
-            return manhattan;
+                int tileGoalI = (tile - 1) / dimension;
+                int tileGoalJ = (tile - 1) % dimension;
+
+                int m = Math.abs(tileGoalI - i) + Math.abs(tileGoalJ - j);
+
+                manhattan += m;
+            }
         }
+
+        return manhattan;
     }
 
     // is this board the goal board?
