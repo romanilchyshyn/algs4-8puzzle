@@ -13,49 +13,79 @@ import java.util.Comparator;
 
 public class Solver {
 
-    private static final class BoardComparator implements Comparator<Board> {
-        public int compare(Board board, Board t1) {
-            return board.manhattan() - t1.manhattan();
+    private static final class SearchNodeComparator implements Comparator<SearchNode> {
+        public int compare(SearchNode sn1, SearchNode sn2) {
+            return sn1.priority - sn2.priority;
         }
+    }
+
+    private final class SearchNode {
+        private final Board board;
+        private final SearchNode parent;
+        private final int moves;
+        private final int priority;
+
+
+        SearchNode(Board board, SearchNode parent, int moves) {
+            this.board = board;
+            this.parent = parent;
+            this.moves = moves;
+            this.priority = moves + board.manhattan();
+        }
+
     }
 
     private final class SolverStepper {
 
-        private Board current;
-        private ArrayList<Board> solution = new ArrayList<>();
+        private MinPQ<SearchNode> pq = new MinPQ<>(new SearchNodeComparator());
+        private SearchNode min;
 
         private SolverStepper(Board initial) {
-            current = initial;
-            solution.add(current);
+            SearchNode initialSearchNode = new SearchNode(initial, null, 0);
+            pq.insert(initialSearchNode);
+            min = initialSearchNode;
         }
 
         private Board next() {
-            if (current.isGoal()) {
-                return current;
+            if (min.board.isGoal()) {
+                return min.board;
             }
 
-            MinPQ<Board> pq = new MinPQ<>(new BoardComparator());
-            for (Board nb : current.neighbors()) {
-                if (solution.size() > 1 && solution.get(solution.size() - 2).equals(nb)) {
+            min = pq.delMin();
+
+            for (Board nb : min.board.neighbors()) {
+                if (min.parent != null && min.parent.board.equals(nb)) {
                     continue;
                 }
-                pq.insert(nb);
+
+                SearchNode childSN = new SearchNode(nb, min, min.moves + 1);
+
+                pq.insert(childSN);
             }
 
-            current = pq.delMin();
-
-            solution.add(current);
-
-            return current;
+            return min.board;
         }
 
         private ArrayList<Board> solution() {
-            return solution;
+            SearchNode sn = min;
+            if (!sn.board.isGoal()) {
+                return null;
+            }
+
+            ArrayList<Board> reversedSolution = new ArrayList<>();
+            while (sn != null) {
+                reversedSolution.add(sn.board);
+                sn = sn.parent;
+            }
+
+            ArrayList<Board> s = new ArrayList<>();
+            for (int i = reversedSolution.size() - 1; i >= 0; i--) {
+                s.add(reversedSolution.get(i));
+            }
+
+            return s;
         }
 
-        private Board current() {
-            return current;
-        }
     }
 
     private boolean isSolvable;
@@ -85,7 +115,7 @@ public class Solver {
             }
         }
 
-        isSolvable = original.current().isGoal();
+        isSolvable = original.next().isGoal();
         moves = isSolvable ? original.solution().size() - 1 : -1;
         solution = isSolvable ? original.solution() : null;
     }
